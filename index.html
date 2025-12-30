@@ -1,0 +1,1133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SPARKFLIX | Movies</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src='//libtl.com/sdk.js' data-zone='10297947' data-sdk='show_10297947'></script>
+
+    <style>
+        :root {
+            --primary: #ff0000;
+            --secondary: #8b0000;
+            --bg-dark: #000000;
+            --bg-card: #1a0000;
+            --text-main: #ffffff;
+            --text-muted: #cccccc;
+            --gradient: linear-gradient(135deg, #8b0000, #ff0000);
+            --glass: rgba(20, 0, 0, 0.8);
+            --nav-height: 60px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            padding-bottom: 70px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 rgba(255, 0, 0, 0.4); } 70% { box-shadow: 0 0 20px rgba(255, 0, 0, 0); } 100% { box-shadow: 0 0 0 rgba(255, 0, 0, 0); } }
+
+        #auth-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: radial-gradient(circle at center, #1a0000, #000);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 9999; padding: 20px;
+        }
+        .logo-large {
+            font-size: 3rem; font-weight: 800; background: var(--gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px; letter-spacing: -1px;
+        }
+        .auth-box {
+            background: rgba(26, 0, 0, 0.6); padding: 30px; border-radius: 20px;
+            backdrop-filter: blur(10px); border: 1px solid rgba(255, 0, 0, 0.3);
+            width: 100%; max-width: 350px; text-align: center;
+            animation: slideUp 0.6s ease;
+        }
+
+        .auth-title {
+            color: white;
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .auth-btn {
+            background: var(--gradient); border: none; padding: 14px; width: 100%;
+            border-radius: 12px; color: white; font-weight: 600; font-size: 1rem;
+            margin-top: 15px; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+        .auth-btn:active { transform: scale(0.96); }
+        .auth-btn.secondary { 
+            background: #222; 
+            box-shadow: none; 
+            margin-top: 10px;
+            border: 1px solid #444;
+        }
+        .auth-btn.secondary:hover {
+            background: #333;
+        }
+        
+        .input-field {
+            width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid #444;
+            border-radius: 10px; color: white; margin-bottom: 10px; outline: none;
+        }
+        .input-field:focus { border-color: var(--primary); }
+        .input-field::placeholder {
+            color: #888;
+        }
+
+        .remember-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+
+        .remember-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .auth-divider {
+            color: #666;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+
+        .switch-form-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 15px;
+            text-decoration: underline;
+        }
+
+        #app-container { display: none; }
+
+        .top-nav {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, rgba(5,5,5,0.95), rgba(5,5,5,0));
+        }
+        .logo-small { font-weight: 800; font-size: 1.5rem; color: white; letter-spacing: -1px; }
+        .logo-small span { color: var(--primary); }
+        .search-icon { font-size: 1.2rem; color: white; cursor: pointer; }
+
+        .hero {
+            position: relative; height: 50vh; width: 100%;
+            display: flex; align-items: flex-end; padding: 20px;
+            margin-bottom: 20px;
+        }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover; z-index: -1; mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+        }
+        .hero-content { z-index: 1; max-width: 600px; animation: slideUp 0.8s ease; }
+        .hero-tag {
+            background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
+            backdrop-filter: blur(5px); display: inline-block; margin-bottom: 10px;
+        }
+        .hero-title { font-size: 2.5rem; line-height: 1.1; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
+        .play-btn-hero {
+            background: white; color: black; border: none; padding: 10px 24px;
+            border-radius: 30px; font-weight: 700; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 8px; transition: 0.2s;
+        }
+        .play-btn-hero:active { transform: scale(0.95); }
+
+        .category-scroll {
+            display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px 20px;
+            scrollbar-width: none;
+        }
+        .category-scroll::-webkit-scrollbar { display: none; }
+        .cat-pill {
+            padding: 8px 16px; background: #1a1a1a; border-radius: 20px; white-space: nowrap;
+            color: #aaa; font-size: 0.9rem; border: 1px solid #333; cursor: pointer; transition: 0.3s;
+        }
+        .cat-pill.active { background: var(--gradient); color: white; border: none; box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
+
+        #search-container {
+            padding: 0 20px 20px 20px; display: none; animation: fadeIn 0.3s;
+        }
+        #search-input {
+            width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333;
+            border-radius: 12px; color: white; font-size: 1rem; outline: none;
+        }
+
+        .section-title { padding: 0 20px; margin-bottom: 15px; font-size: 1.2rem; font-weight: 600; }
+        
+        .movie-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px; padding: 0 20px 80px 20px;
+        }
+        .movie-card {
+            position: relative; border-radius: 12px; overflow: hidden;
+            background: var(--bg-card); cursor: pointer; transition: 0.3s;
+            aspect-ratio: 2/3;
+        }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .movie-card:hover img { transform: scale(1.1); opacity: 0.6; }
+        
+        .movie-info {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+        .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-meta { font-size: 0.7rem; color: var(--primary); }
+        
+        .card-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+        .movie-card:hover .card-overlay { opacity: 1; }
+
+        #movie-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
+            background: #000; overflow-y: auto; display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .modal-hero {
+            position: relative; height: 40vh; width: 100%;
+        }
+        .modal-poster {
+            width: 100%; height: 100%; object-fit: cover;
+            mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+        }
+        .close-btn {
+            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5);
+            width: 40px; height: 40px; border-radius: 50%; color: white;
+            display: flex; justify-content: center; align-items: center; cursor: pointer;
+            backdrop-filter: blur(5px); z-index: 2; border: 1px solid rgba(255,255,255,0.2);
+        }
+        .modal-content { padding: 20px; margin-top: -60px; position: relative; z-index: 2; }
+        .modal-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        .modal-tags { display: flex; gap: 10px; margin-bottom: 20px; font-size: 0.8rem; color: #ccc; }
+        .tag { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 4px; }
+        
+        .action-row { display: flex; gap: 15px; margin-bottom: 30px; }
+        .btn-play {
+            flex: 1; background: var(--gradient); border: none; padding: 15px; border-radius: 12px;
+            color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+            animation: pulse 2s infinite;
+        }
+        .btn-unlock {
+            flex: 1; background: #222; border: 1px solid #444; color: white; 
+            border-radius: 12px; padding: 15px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+        .btn-report {
+            flex: 1; background: #ff6b00; border: none; padding: 15px; border-radius: 12px;
+            color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
+            display: flex; justify-content: center; align-items: center; gap: 10px;
+        }
+
+        .modal-desc { line-height: 1.6; color: #ccc; margin-bottom: 30px; font-size: 0.95rem; }
+
+        /* MODAL DE REPORTE */
+        #report-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .report-box {
+            background: rgba(26, 0, 0, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
+        }
+
+        .report-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .report-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .report-close {
+            background: rgba(255, 255, 255, 0.1);
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+
+        .report-type-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .report-type-btn {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid #444;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .report-type-btn.active {
+            background: var(--gradient);
+            border-color: var(--primary);
+        }
+
+        .report-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid #444;
+            border-radius: 12px;
+            color: white;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 20px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .report-textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .report-submit {
+            width: 100%;
+            padding: 15px;
+            background: var(--gradient);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .report-submit:active {
+            transform: scale(0.96);
+        }
+
+        #video-player-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: #000;
+            z-index: 2000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+            overflow: hidden;
+        }
+
+        .video-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2001;
+        }
+
+        .video-back-btn {
+            background: rgba(0, 0, 0, 0.6);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .video-back-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
+        }
+
+        .video-title-header {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .video-player-container {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #movie-video-player {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border: none;
+        }
+
+        video#movie-video-player {
+            object-fit: contain;
+        }
+
+        iframe#movie-video-player {
+            border: none;
+        }
+
+        #profile-section { display: none; padding: 20px; text-align: center; animation: slideUp 0.4s; }
+        .avatar {
+            width: 100px; height: 100px; background: #333; border-radius: 50%; margin: 0 auto 20px;
+            display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        .user-name { font-size: 1.5rem; margin-bottom: 5px; }
+        .user-email { color: #888; margin-bottom: 30px; }
+
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+            background: rgba(10, 10, 10, 0.95); backdrop-filter: blur(10px);
+            display: flex; justify-content: space-around; align-items: center;
+            border-top: 1px solid #222; z-index: 500;
+        }
+        .nav-item {
+            color: #666; font-size: 0.7rem; display: flex; flex-direction: column;
+            align-items: center; gap: 5px; cursor: pointer; transition: 0.3s;
+        }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
+        .nav-item.active { color: var(--primary); }
+
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: #333; color: white; padding: 12px 24px; border-radius: 30px;
+            font-size: 0.9rem; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 4000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap;
+        }
+        #toast.show { opacity: 1; top: 40px; }
+
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1); border-top: 3px solid var(--primary);
+            border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite;
+            display: none; margin: 20px auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .cooldown-timer {
+            background: rgba(255, 0, 0, 0.2); border: 1px solid #ff4444; color: #ff8888;
+            border-radius: 8px; padding: 8px; text-align: center; margin-top: 10px;
+            font-size: 0.9rem; display: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="auth-screen">
+        <div class="auth-header">
+            <div class="logo-large">SPARKFLIX</div>
+        </div>
+        
+        <div class="auth-box">
+            <h1 class="auth-title">Bienvenido</h1>
+            
+            <div id="login-form" class="auth-form active">
+                <div class="input-group">
+                    <input type="email" id="login-email" class="input-field" placeholder="Email o teléfono">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="login-pass" class="input-field" placeholder="Contraseña">
+                </div>
+                
+                <button class="auth-btn" onclick="handleEmailLogin()">Iniciar Sesión</button>
+                
+                <div class="remember-group">
+                    <input type="checkbox" id="remember-me">
+                    <label for="remember-me">Recuérdame</label>
+                </div>
+                
+                <div class="auth-divider">O</div>
+                
+                <button class="auth-btn secondary" onclick="handleAnonymousAuth()">
+                    <i class="fas fa-user-secret"></i> Continuar como Invitado
+                </button>
+
+                <button class="switch-form-btn" onclick="switchToSignup()">¿No tienes cuenta? Crear cuenta</button>
+            </div>
+            
+            <div id="signup-form" class="auth-form">
+                <div class="input-group">
+                    <input type="email" id="signup-email" class="input-field" placeholder="Email">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signup-pass" class="input-field" placeholder="Contraseña">
+                </div>
+                <div class="input-group">
+                    <input type="password" id="signup-pass-confirm" class="input-field" placeholder="Confirmar Contraseña">
+                </div>
+                
+                <button class="auth-btn" onclick="handleSignUp()">Crear Cuenta</button>
+
+                <button class="switch-form-btn" onclick="switchToLogin()">¿Ya tienes cuenta? Iniciar sesión</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="app-container">
+        
+        <div class="top-nav">
+            <div class="logo-small">SPARK<span>FLIX</span></div>
+            <i class="fas fa-search search-icon" onclick="toggleSearch()"></i>
+        </div>
+
+        <div id="search-container">
+            <input type="text" id="search-input" placeholder="Buscar Peliculas, Generos..." onkeyup="filterMovies()">
+        </div>
+
+        <div id="home-view">
+            <div class="hero" id="hero-section">
+                <img src="" class="hero-bg" id="hero-img">
+                <div class="hero-content">
+                    <div class="hero-tag">RECIENTE</div>
+                    <h1 class="hero-title" id="hero-title">Loading...</h1>
+                    <button class="play-btn-hero" id="hero-play-btn"><i class="fas fa-play"></i> VER AHORA </button>
+                </div>
+            </div>
+
+            <div class="section-title">CATEGORIAS</div>
+            <div class="category-scroll">
+                <div class="cat-pill active" onclick="filterCategory('All')">Todo</div>
+                <div class="cat-pill" onclick="filterCategory('Accion')">Accion</div>
+                <div class="cat-pill" onclick="filterCategory('Ciencia Ficcion')">Ciencia Ficcion</div>
+                <div class="cat-pill" onclick="filterCategory('Drama')">Drama</div>
+                <div class="cat-pill" onclick="filterCategory('Terror')">Terror</div>
+                <div class="cat-pill" onclick="filterCategory('Anime')">Anime</div>
+                 <div class="cat-pill" onclick="filterCategory('Romance')">Romance</div>
+            </div>
+
+            <div class="section-title" id="grid-title">TENDENCIA</div>
+            <div class="loader" id="loader"></div>
+            <div class="movie-grid" id="movie-grid"></div>
+        </div>
+
+        <div id="profile-section">
+            <div class="avatar"><i class="fas fa-user"></i></div>
+            <h2 class="user-name" id="profile-name">User</h2>
+            <p class="user-email" id="profile-email">user@sparkflix.com</p>
+            
+            <button class="auth-btn secondary" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> CERRAR SESION
+            </button>
+            
+            <div style="margin-top: 50px; color: #444; font-size: 0.8rem;">
+                SPARKFLIX v1.0.0<br>desarrollador by @scoreado
+            </div>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav" id="bottom-nav" style="display:none;">
+        <div class="nav-item active" onclick="switchTab('home')">
+            <i class="fas fa-home"></i>
+            <span>INICIO</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('search')">
+            <i class="fas fa-compass"></i>
+            <span>EXPLORAR</span>
+        </div>
+        <div class="nav-item" onclick="switchTab('profile')">
+            <i class="fas fa-user"></i>
+            <span>PERFIL</span>
+        </div>
+    </div>
+
+    <div id="movie-modal">
+        <div class="modal-hero">
+            <img src="" class="modal-poster" id="detail-poster">
+            <div class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></div>
+        </div>
+        <div class="modal-content">
+            <h1 class="modal-title" id="detail-title">Movie Title</h1>
+            <div class="modal-tags">
+                <span class="tag" id="detail-year">2023</span>
+                <span class="tag" id="detail-genre">Action</span>
+                <span class="tag" style="color: gold;"><i class="fas fa-star"></i> <span id="detail-rating">8.5</span></span>
+            </div>
+            
+           <div class="action-row">
+    <button class="btn-play" id="play-trailer-btn">
+        <i class="fas fa-play"></i> Ver Película
+    </button>
+    
+    <button class="btn-report" id="report-btn" onclick="openReportModal()">
+        <i class="fas fa-flag"></i> Reportar
+    </button>
+  </div>
+            
+            <p class="modal-desc" id="detail-desc">
+                Movie description goes here...
+            </p>
+        </div>
+    </div>
+
+    <!-- MODAL DE REPORTE/SUGERENCIA -->
+    <div id="report-modal">
+        <div class="report-box">
+            <div class="report-header">
+                <h2 class="report-title">Reportar o Sugerir</h2>
+                <button class="report-close" onclick="closeReportModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="report-type-buttons">
+                <button class="report-type-btn active" onclick="selectReportType('problema')">
+                    <i class="fas fa-exclamation-triangle"></i> Problema
+                </button>
+                <button class="report-type-btn" onclick="selectReportType('sugerencia')">
+                    <i class="fas fa-lightbulb"></i> Sugerencia
+                    
+                </button>
+            </div>
+
+            <textarea 
+                class="report-textarea" 
+                id="report-message" 
+                placeholder="Describe el problema o tu sugerencia aquí..."
+            ></textarea>
+
+            <button class="report-submit" onclick="submitReport()">
+                <i class="fas fa-paper-plane"></i> Enviar
+            </button>
+        </div>
+    </div>
+
+    <div id="video-player-modal">
+        <div class="video-header">
+            <div class="video-back-btn" onclick="closeVideoPlayer()">
+                <i class="fas fa-arrow-left"></i>
+            </div>
+            <div class="video-title-header" id="video-title-text">Película</div>
+            <div style="width: 40px;"></div>
+        </div>
+        <div class="video-player-container" id="video-container">
+        </div>
+    </div>
+
+    <div id="toast">Message</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+        import { getFirestore, collection, getDocs, doc, setDoc, query, orderBy, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBHALg0FHQFIBH6K9GLjWmj3SL0bX_GRwA",
+            authDomain: "movisa-e9c7b.firebaseapp.com",
+            databaseURL: "https://movisa-e9c7b-default-rtdb.firebaseio.com",
+            projectId: "movisa-e9c7b",
+            storageBucket: "movisa-e9c7b.firebasestorage.app",
+            messagingSenderId: "102627126358",
+            appId: "1:102627126358:web:180aab3702747f99689ff7"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        let allMovies = [];
+        let currentUser = null;
+        let currentMovieId = "";
+        let currentMovieTitle = "";
+        let currentMovieLink = "";
+        let adCounts = {};
+        let downloadTimestamps = {};
+        let adCooldown = null;
+        let canWatchAd = true;
+        let adTimeout = null;
+        let currentReportType = 'problema';
+
+        window.switchToSignup = () => {
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('signup-form').classList.add('active');
+        };
+
+        window.switchToLogin = () => {
+            document.getElementById('signup-form').classList.remove('active');
+            document.getElementById('login-form').classList.add('active');
+        };
+
+        // FUNCIONES DE REPORTE
+        window.openReportModal = () => {
+            document.getElementById('report-modal').style.display = 'flex';
+            document.getElementById('report-message').value = '';
+            currentReportType = 'problema';
+            document.querySelectorAll('.report-type-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.report-type-btn')[0].classList.add('active');
+        };
+
+        window.closeReportModal = () => {
+            document.getElementById('report-modal').style.display = 'none';
+        };
+
+        window.selectReportType = (type) => {
+            currentReportType = type;
+            document.querySelectorAll('.report-type-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        };
+
+        window.submitReport = async () => {
+            const message = document.getElementById('report-message').value.trim();
+            
+            if (!message) {
+                showToast('Por favor escribe un mensaje');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, "reports"), {
+                    tipo: currentReportType,
+                    mensaje: message,
+                    pelicula: currentMovieTitle,
+                    peliculaId: currentMovieId,
+                    usuario: currentUser ? currentUser.email || currentUser.uid : 'Anónimo',
+                    fecha: new Date(),
+                    estado: 'pendiente'
+                });
+
+                showToast(currentReportType === 'problema' ? '¡Reporte enviado!' : '¡Sugerencia enviada!');
+                closeReportModal();
+            } catch (error) {
+                console.error('Error al enviar:', error);
+                showToast('Error al enviar. Intenta de nuevo.');
+            }
+        };
+
+        function getAdCount(movieId) {
+            if (!adCounts[movieId]) {
+                const saved = localStorage.getItem(`ad_count_${movieId}`);
+                adCounts[movieId] = saved ? parseInt(saved) : 0;
+            }
+            return adCounts[movieId];
+        }
+
+        function updateAdDisplay() {
+            const count = getAdCount(currentMovieId);
+            const adBtn = document.getElementById('ad-unlock-btn');
+            const cooldownTimer = document.getElementById('cooldown-timer');
+            
+            if (count >= 5) {
+                adCounts[currentMovieId] = 5;
+                localStorage.setItem(`ad_count_${currentMovieId}`, 5);
+                adBtn.style.display = 'none';
+                cooldownTimer.style.display = 'none';
+            } else {
+                adBtn.style.display = 'flex';
+                document.getElementById('ad-count-text').textContent = `Desbloquear (${count}/5)`;
+                
+                if (!canWatchAd) {
+                    adBtn.disabled = true;
+                    adBtn.style.opacity = '0.6';
+                    cooldownTimer.style.display = 'block';
+                } else {
+                    adBtn.disabled = false;
+                    adBtn.style.opacity = '1';
+                    cooldownTimer.style.display = 'none';
+                }
+            }
+        }
+
+        window.handleEmailLogin = () => {
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-pass').value;
+            if(!email || !pass) return showToast("Ingresa email y contraseña");
+            
+            signInWithEmailAndPassword(auth, email, pass)
+                .then(() => showToast("¡Bienvenido de nuevo!"))
+                .catch(err => {
+                    if (err.code === 'auth/user-not-found') {
+                        showToast("Usuario no encontrado");
+                    } else if (err.code === 'auth/wrong-password') {
+                        showToast("Contraseña incorrecta");
+                    } else {
+                        showToast("Error al iniciar sesión");
+                    }
+                });
+        };
+
+        window.handleSignUp = () => {
+            const email = document.getElementById('signup-email').value;
+            const pass = document.getElementById('signup-pass').value;
+            const passConfirm = document.getElementById('signup-pass-confirm').value;
+            
+            if(!email || !pass || !passConfirm) return showToast("Completa todos los campos");
+            if(pass !== passConfirm) return showToast("Las contraseñas no coinciden");
+            if(pass.length < 6) return showToast("La contraseña debe tener al menos 6 caracteres");
+
+            createUserWithEmailAndPassword(auth, email, pass)
+                .then(async (cred) => {
+                    await setDoc(doc(db, "users", cred.user.uid), {
+                        email: email,
+                        joined: new Date(),
+                        blocked: false
+                    });
+                    showToast("¡Cuenta creada exitosamente!");
+                })
+                .catch(err => {
+                    if (err.code === 'auth/email-already-in-use') {
+                        showToast("Este email ya está registrado");
+                    } else if (err.code === 'auth/invalid-email') {
+                        showToast("Email inválido");
+                    } else {
+                        showToast("Error al crear cuenta");
+                    }
+                });
+        };
+
+        window.handleAnonymousAuth = () => {
+            signInAnonymously(auth)
+                .then(() => showToast("Entrando como invitado..."))
+                .catch(err => showToast(err.message));
+        };
+
+        window.logout = () => {
+            signOut(auth).then(() => location.reload());
+        };
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                document.getElementById('bottom-nav').style.display = 'flex';
+                
+                document.getElementById('profile-name').innerText = user.displayName || "SPARKFLIX USER";
+                document.getElementById('profile-email').innerText = user.email || "CUENTA DE INVITADO";
+                
+                fetchMovies();
+            } else {
+                document.getElementById('auth-screen').style.display = 'flex';
+                document.getElementById('app-container').style.display = 'none';
+                document.getElementById('bottom-nav').style.display = 'none';
+            }
+        });
+
+        function fetchMovies() {
+            document.getElementById('loader').style.display = 'block';
+            const q = query(collection(db, "movies"), orderBy("addedAt", "desc"));
+            
+            onSnapshot(q, (snapshot) => {
+                allMovies = [];
+                snapshot.forEach(doc => {
+                    allMovies.push({ id: doc.id, ...doc.data() });
+                });
+                document.getElementById('loader').style.display = 'none';
+                renderMovies(allMovies);
+                setHeroMovie(allMovies[0]);
+            });
+        }
+
+        function renderMovies(movies) {
+            const grid = document.getElementById('movie-grid');
+            grid.innerHTML = '';
+            
+            if(movies.length === 0) {
+                grid.innerHTML = '<p style="color:#666; width:100%; text-align:center;">No movies found.</p>';
+                return;
+            }
+
+            movies.forEach(movie => {
+                const el = document.createElement('div');
+                el.className = 'movie-card';
+                el.innerHTML = `
+                    <img src="${movie.poster}" onerror="this.src='https://via.placeholder.com/200x300?text=No+Img'">
+                    <div class="movie-info">
+                        <div class="card-title">${movie.title}</div>
+                        <div class="card-meta">${movie.year} • ${movie.genre}</div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="card-title">${movie.title}</div>
+                        <div class="card-meta">${movie.year} • ${movie.genre} • ⭐${movie.rating}</div>
+                    </div>
+                `;
+                el.onclick = () => openDetails(movie);
+                grid.appendChild(el);
+            });
+        }
+
+        function setHeroMovie(movie) {
+            if(!movie) return;
+            const heroImg = document.getElementById('hero-img');
+            heroImg.style.opacity = '0';
+            setTimeout(() => {
+                heroImg.src = movie.poster;
+                heroImg.style.opacity = '1';
+                document.getElementById('hero-title').innerText = movie.title;
+                document.getElementById('hero-play-btn').onclick = () => openDetails(movie);
+            }, 300);
+        }
+
+        window.filterCategory = (cat) => {
+            document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            if(cat === 'All') {
+                renderMovies(allMovies);
+            } else {
+                const filtered = allMovies.filter(m => m.genre === cat);
+                renderMovies(filtered);
+            }
+        };
+
+        window.filterMovies = () => {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            const filtered = allMovies.filter(m => 
+                m.title.toLowerCase().includes(term) || m.genre.toLowerCase().includes(term)
+            );
+            renderMovies(filtered);
+        };
+
+        window.toggleSearch = () => {
+            const searchContainer = document.getElementById('search-container');
+            if(searchContainer.style.display === 'block') {
+                searchContainer.style.display = 'none';
+            } else {
+                searchContainer.style.display = 'block';
+                document.getElementById('search-input').focus();
+            }
+        };
+
+        window.switchTab = (tab) => {
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+            if(tab === 'home') {
+                document.getElementById('home-view').style.display = 'block';
+                document.getElementById('profile-section').style.display = 'none';
+            } else if (tab === 'profile') {
+                document.getElementById('home-view').style.display = 'none';
+                document.getElementById('profile-section').style.display = 'block';
+            } else if (tab === 'search') {
+                document.getElementById('home-view').style.display = 'block';
+                document.getElementById('profile-section').style.display = 'none';
+                toggleSearch();
+            }
+        };
+
+        function startCooldown() {
+            canWatchAd = false;
+            let seconds = 10;
+            const cooldownTimer = document.getElementById('cooldown-timer');
+            const countdownElement = document.getElementById('cooldown-seconds');
+            const adBtn = document.getElementById('ad-unlock-btn');
+            cooldownTimer.style.display = 'block';
+            adBtn.disabled = true;
+            adBtn.style.opacity = '0.6';
+            adCooldown = setInterval(() => {
+                seconds--;
+                countdownElement.textContent = seconds;
+                if (seconds <= 0) {
+                    clearInterval(adCooldown);
+                    canWatchAd = true;
+                    cooldownTimer.style.display = 'none';
+                    adBtn.disabled = false;
+                    adBtn.style.opacity = '1';
+                }
+            }, 1000);
+        }
+
+        async function watchAd() {
+            if (!canWatchAd) return;
+            const adBtn = document.getElementById('ad-unlock-btn');
+            let currentCount = getAdCount(currentMovieId);
+            if (currentCount >= 5) {
+                updateAdDisplay();
+                showToast("¡Ya desbloqueado!");
+                return;
+            }
+            try {
+                adBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cargando...';
+                adBtn.disabled = true;
+                if (adTimeout) clearTimeout(adTimeout);
+                const adPromise = show_10297947();
+                adTimeout = setTimeout(() => {
+                    adBtn.disabled = false;
+                    adBtn.innerHTML = '<i class="fas fa-lock"></i> <span id="ad-count-text">Desbloquear (' + currentCount + '/5)</span>';
+                    showToast("Tiempo agotado. Intenta de nuevo.");
+                }, 15000);
+                await adPromise;
+                clearTimeout(adTimeout);
+                currentCount = getAdCount(currentMovieId);
+                let newCount = Math.min(currentCount + 1, 5);
+                adCounts[currentMovieId] = newCount;
+                localStorage.setItem(`ad_count_${currentMovieId}`, newCount);
+                startCooldown();
+                document.getElementById('ad-count-text').textContent = `Desbloquear (${newCount}/5)`;
+                adBtn.innerHTML = '<i class="fas fa-lock"></i> <span id="ad-count-text">Desbloquear (' + newCount + '/5)</span>';
+                adBtn.disabled = false;
+                updateAdDisplay();
+                if(newCount >= 5) {
+                    showToast("🎉 ¡Película desbloqueada!");
+                } else {
+                    showToast(`Anuncio visto! ${newCount}/5 completado`);
+                }
+            } catch(err) {
+                showToast("Anuncio cerrado. Click de nuevo.");
+                currentCount = getAdCount(currentMovieId);
+                adBtn.disabled = false;
+                adBtn.innerHTML = '<i class="fas fa-lock"></i> <span id="ad-count-text">Desbloquear (' + currentCount + '/5)</span>';
+            }
+        }
+
+        function getVideoEmbedCode(url) {
+            if (url.includes('youtube.com') || url.includes('youtu.be')) {
+                let videoId = '';
+                if (url.includes('youtube.com/watch?v=')) {
+                    videoId = url.split('v=')[1]?.split('&')[0];
+                } else if (url.includes('youtu.be/')) {
+                    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                } else if (url.includes('youtube.com/embed/')) {
+                    videoId = url.split('embed/')[1]?.split('?')[0];
+                }
+                if (videoId) {
+                    return `<iframe id="movie-video-player" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
+                }
+            }
+            if (url.includes('drive.google.com')) {
+                let fileId = '';
+                if (url.includes('/file/d/')) {
+                    fileId = url.split('/file/d/')[1]?.split('/')[0];
+                } else if (url.includes('id=')) {
+                    fileId = url.split('id=')[1]?.split('&')[0];
+                }
+                if (fileId) {
+                    return `<iframe id="movie-video-player" src="https://drive.google.com/file/d/${fileId}/preview" allowfullscreen allow="autoplay"></iframe>`;
+                }
+            }
+            if (url.match(/\.(mp4|webm|ogg|m3u8)(\?|$)/i)) {
+                return `<video id="movie-video-player" controls autoplay controlsList="nodownload"><source src="${url}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
+            }
+            return `<iframe id="movie-video-player" src="${url}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
+        }
+
+        window.openVideoPlayer = (videoUrl, title) => {
+            const modal = document.getElementById('video-player-modal');
+            const container = document.getElementById('video-container');
+            const titleHeader = document.getElementById('video-title-text');
+            container.innerHTML = '';
+            const embedCode = getVideoEmbedCode(videoUrl);
+            container.innerHTML = embedCode;
+            titleHeader.textContent = title || 'Película';
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeVideoPlayer = () => {
+            const modal = document.getElementById('video-player-modal');
+            const container = document.getElementById('video-container');
+            container.innerHTML = '';
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+
+        window.openDetails = (movie) => {
+    const modal = document.getElementById('movie-modal');
+    document.getElementById('detail-poster').src = movie.poster;
+    document.getElementById('detail-title').innerText = movie.title;
+    document.getElementById('detail-year').innerText = movie.year;
+    document.getElementById('detail-genre').innerText = movie.genre;
+    document.getElementById('detail-rating').innerText = movie.rating;
+    document.getElementById('detail-desc').innerText = movie.desc;
+    currentMovieId = movie.id;
+    currentMovieTitle = movie.title;
+    currentMovieLink = movie.link;
+    
+    const playBtn = document.getElementById('play-trailer-btn');
+    playBtn.onclick = () => {
+        if(movie.trailer) {
+            openVideoPlayer(movie.trailer, movie.title);
+        } else {
+            showToast("Película no disponible");
+        }
+    };
+    modal.style.display = 'block';
+};
+
+        window.closeModal = () => {
+            document.getElementById('movie-modal').style.display = 'none';
+            if (adTimeout) clearTimeout(adTimeout);
+        };
+
+        window.showToast = (msg) => {
+            const t = document.getElementById('toast');
+            t.innerText = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        };
+
+    </script>
+</body>
+</html>
