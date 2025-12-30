@@ -86,12 +86,18 @@
             margin-top: 10px;
             border: 1px solid #444;
         }
+        .auth-btn.secondary:hover {
+            background: #333;
+        }
         
         .input-field {
             width: 100%; padding: 12px; background: rgba(0,0,0,0.5); border: 1px solid #444;
             border-radius: 10px; color: white; margin-bottom: 10px; outline: none;
         }
         .input-field:focus { border-color: var(--primary); }
+        .input-field::placeholder {
+            color: #888;
+        }
 
         .remember-group {
             display: flex;
@@ -100,6 +106,12 @@
             margin-top: 10px;
             color: #ccc;
             font-size: 0.9rem;
+        }
+
+        .remember-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
         }
 
         .auth-divider {
@@ -124,7 +136,7 @@
             padding: 20px; display: flex; justify-content: space-between; align-items: center;
             position: sticky; top: 0; z-index: 100; background: linear-gradient(180deg, rgba(5,5,5,0.95), rgba(5,5,5,0));
         }
-        .logo-small { font-weight: 800; font-size: 1.5rem; color: white; }
+        .logo-small { font-weight: 800; font-size: 1.5rem; color: white; letter-spacing: -1px; }
         .logo-small span { color: var(--primary); }
         .search-icon { font-size: 1.2rem; color: white; cursor: pointer; }
 
@@ -162,6 +174,11 @@
             margin-bottom: 5px;
             text-shadow: 0 2px 10px rgba(0,0,0,0.8);
         }
+        .banner-desc {
+            font-size: 0.9rem;
+            color: #ddd;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+        }
 
         .hero {
             position: relative; height: 50vh; width: 100%;
@@ -170,21 +187,22 @@
         }
         .hero-bg {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            object-fit: cover; z-index: -1; 
-            mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            object-fit: cover; z-index: -1; mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
         }
-        .hero-content { z-index: 1; max-width: 600px; }
+        .hero-content { z-index: 1; max-width: 600px; animation: slideUp 0.8s ease; }
         .hero-tag {
             background: rgba(255,255,255,0.2); padding: 4px 10px; border-radius: 4px;
-            font-size: 0.7rem; text-transform: uppercase;
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px;
             backdrop-filter: blur(5px); display: inline-block; margin-bottom: 10px;
         }
-        .hero-title { font-size: 2.5rem; line-height: 1.1; margin-bottom: 10px; }
+        .hero-title { font-size: 2.5rem; line-height: 1.1; margin-bottom: 10px; text-shadow: 0 2px 10px rgba(0,0,0,0.8); }
         .play-btn-hero {
             background: white; color: black; border: none; padding: 10px 24px;
-            border-radius: 30px; font-weight: 700; cursor: pointer; 
-            display: inline-flex; align-items: center; gap: 8px;
+            border-radius: 30px; font-weight: 700; cursor: pointer; display: inline-flex;
+            align-items: center; gap: 8px; transition: 0.2s;
         }
+        .play-btn-hero:active { transform: scale(0.95); }
 
         .category-scroll {
             display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px 20px;
@@ -193,12 +211,12 @@
         .category-scroll::-webkit-scrollbar { display: none; }
         .cat-pill {
             padding: 8px 16px; background: #1a1a1a; border-radius: 20px; white-space: nowrap;
-            color: #aaa; font-size: 0.9rem; border: 1px solid #333; cursor: pointer;
+            color: #aaa; font-size: 0.9rem; border: 1px solid #333; cursor: pointer; transition: 0.3s;
         }
-        .cat-pill.active { background: var(--gradient); color: white; border: none; }
+        .cat-pill.active { background: var(--gradient); color: white; border: none; box-shadow: 0 0 10px rgba(255, 0, 0, 0.4); }
 
         #search-container {
-            padding: 0 20px 20px 20px; display: none;
+            padding: 0 20px 20px 20px; display: none; animation: fadeIn 0.3s;
         }
         #search-input {
             width: 100%; padding: 15px; background: #1a1a1a; border: 1px solid #333;
@@ -217,6 +235,7 @@
             border: 1px solid #333;
             border-radius: 20px;
             cursor: pointer;
+            transition: 0.3s;
             color: #aaa;
             font-weight: 600;
         }
@@ -234,17 +253,26 @@
         }
         .movie-card {
             position: relative; border-radius: 12px; overflow: hidden;
-            background: var(--bg-card); cursor: pointer;
+            background: var(--bg-card); cursor: pointer; transition: 0.3s;
             aspect-ratio: 2/3;
         }
-        .movie-card img { width: 100%; height: 100%; object-fit: cover; }
+        .movie-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .movie-card:hover img { transform: scale(1.1); opacity: 0.6; }
         
         .movie-info {
             position: absolute; bottom: 0; left: 0; width: 100%;
             padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
         }
-        .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; }
+        .card-title { font-size: 0.9rem; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-meta { font-size: 0.7rem; color: var(--primary); }
+        
+        .card-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 10px; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+        .movie-card:hover .card-overlay { opacity: 1; }
 
         .series-type-badge {
             position: absolute;
@@ -258,9 +286,11 @@
             font-weight: 700;
             z-index: 2;
         }
-    #movie-modal {
+
+        #movie-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1000;
             background: #000; overflow-y: auto; display: none;
+            animation: fadeIn 0.3s ease;
         }
         .modal-hero {
             position: relative; height: 40vh; width: 100%;
@@ -268,6 +298,7 @@
         .modal-poster {
             width: 100%; height: 100%; object-fit: cover;
             mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
         }
         .close-btn {
             position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.5);
@@ -297,6 +328,7 @@
             margin-bottom: 15px;
             scrollbar-width: none;
         }
+        .arc-list::-webkit-scrollbar { display: none; }
         .arc-btn {
             padding: 8px 16px;
             background: #222;
@@ -305,6 +337,7 @@
             color: white;
             cursor: pointer;
             white-space: nowrap;
+            transition: 0.3s;
         }
         .arc-btn.active {
             background: var(--gradient);
@@ -323,6 +356,11 @@
             color: white;
             cursor: pointer;
             text-align: center;
+            transition: 0.3s;
+        }
+        .episode-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
         }
 
         .action-row { display: flex; gap: 15px; margin-bottom: 30px; }
@@ -330,6 +368,7 @@
             flex: 1; background: var(--gradient); border: none; padding: 15px; border-radius: 12px;
             color: white; font-weight: 700; font-size: 1rem; cursor: pointer;
             display: flex; justify-content: center; align-items: center; gap: 10px;
+            animation: pulse 2s infinite;
         }
         .btn-report {
             flex: 1; background: #ff6b00; border: none; padding: 15px; border-radius: 12px;
@@ -351,6 +390,7 @@
             justify-content: center;
             align-items: center;
             padding: 20px;
+            animation: fadeIn 0.3s ease;
         }
 
         .report-box {
@@ -360,6 +400,7 @@
             width: 100%;
             max-width: 450px;
             border: 1px solid rgba(255, 0, 0, 0.3);
+            animation: slideUp 0.4s ease;
         }
 
         .report-header {
@@ -402,6 +443,8 @@
             border-radius: 10px;
             color: white;
             cursor: pointer;
+            transition: 0.3s;
+            font-size: 0.9rem;
         }
 
         .report-type-btn.active {
@@ -423,6 +466,10 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        .report-textarea:focus {
+            border-color: var(--primary);
+        }
+
         .report-submit {
             width: 100%;
             padding: 15px;
@@ -433,9 +480,13 @@
             font-weight: 700;
             font-size: 1rem;
             cursor: pointer;
+            transition: 0.3s;
         }
 
-        /* REPRODUCTOR MEJORADO */
+        .report-submit:active {
+            transform: scale(0.96);
+        }
+
         #video-player-modal {
             position: fixed;
             top: 0;
@@ -445,33 +496,21 @@
             background: #000;
             z-index: 2000;
             display: none;
+            animation: fadeIn 0.3s ease;
+            overflow: hidden;
         }
 
-        .video-controls-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2001;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.9) 100%);
-            transition: opacity 0.3s;
-        }
-
-        .video-controls-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .video-top-bar {
+        .video-header {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             padding: 15px 20px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.8), transparent);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            z-index: 2001;
         }
 
         .video-back-btn {
@@ -486,123 +525,16 @@
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(5px);
-            transition: 0.3s;
         }
 
-        .video-back-btn:active {
-            background: var(--primary);
-            transform: scale(0.95);
+        .video-back-btn:hover {
+            background: rgba(255, 0, 0, 0.8);
         }
 
         .video-title-header {
             color: white;
             font-size: 1.1rem;
             font-weight: 600;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.8);
-        }
-
-        .video-center-control {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80px;
-            height: 80px;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            border: 3px solid white;
-            backdrop-filter: blur(10px);
-            transition: 0.3s;
-        }
-
-        .video-center-control:active {
-            transform: translate(-50%, -50%) scale(0.9);
-        }
-
-        .video-center-control i {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .video-center-control.playing {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .video-bottom-controls {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            padding: 15px 20px 20px 20px;
-        }
-
-        .video-progress-container {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            cursor: pointer;
-            margin-bottom: 15px;
-            position: relative;
-        }
-
-        .video-progress-bar {
-            height: 100%;
-            background: var(--primary);
-            border-radius: 2px;
-            width: 0%;
-            position: relative;
-            transition: width 0.1s;
-        }
-
-        .video-progress-bar::after {
-            content: '';
-            position: absolute;
-            right: -6px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
-        }
-
-        .video-controls-row {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .video-control-btn {
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 1.2rem;
-            cursor: pointer;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: 0.3s;
-        }
-
-        .video-control-btn:active {
-            transform: scale(0.9);
-            color: var(--primary);
-        }
-
-        .video-time {
-            color: white;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.8);
         }
 
         .video-player-container {
@@ -618,6 +550,7 @@
             width: 100%;
             height: 100%;
             background: #000;
+            border: none;
         }
 
         video#movie-video-player {
@@ -628,7 +561,7 @@
             border: none;
         }
 
-        #profile-section { display: none; padding: 20px; text-align: center; }
+        #profile-section { display: none; padding: 20px; text-align: center; animation: slideUp 0.4s; }
         .avatar {
             width: 100px; height: 100px; background: #333; border-radius: 50%; margin: 0 auto 20px;
             display: flex; justify-content: center; align-items: center; font-size: 2.5rem; color: var(--primary);
@@ -645,16 +578,16 @@
         }
         .nav-item {
             color: #666; font-size: 0.7rem; display: flex; flex-direction: column;
-            align-items: center; gap: 5px; cursor: pointer;
+            align-items: center; gap: 5px; cursor: pointer; transition: 0.3s;
         }
-        .nav-item i { font-size: 1.2rem; }
+        .nav-item i { font-size: 1.2rem; margin-bottom: 2px; }
         .nav-item.active { color: var(--primary); }
 
         #toast {
             position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
             background: #333; color: white; padding: 12px 24px; border-radius: 30px;
             font-size: 0.9rem; opacity: 0; pointer-events: none; transition: 0.3s; z-index: 4000;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5); white-space: nowrap;
         }
         #toast.show { opacity: 1; top: 40px; }
 
@@ -757,7 +690,8 @@
                 <div class="cat-pill" onclick="filterCategory('Terror')">Terror</div>
                 <div class="cat-pill" onclick="filterCategory('Anime')">Anime</div>
                 <div class="cat-pill" onclick="filterCategory('Romance')">Romance</div>
-                <div class="cat-pill" onclick="filterCategory('Caricaturas')">Caricaturas</div>
+                <div class="cat-pill" onclick="filterCategory('Caricaturas')">
+Caricaturas</div>
                 <div class="cat-pill" onclick="filterCategory('Documental')">Documental</div>
             </div>
 
@@ -765,6 +699,7 @@
             <div class="loader" id="loader"></div>
             <div class="movie-grid" id="movie-grid"></div>
         </div>
+
         <div id="profile-section">
             <div class="avatar"><i class="fas fa-user"></i></div>
             <h2 class="user-name" id="profile-name">User</h2>
@@ -863,177 +798,19 @@
     </div>
 
     <div id="video-player-modal">
-        <div class="video-controls-overlay" id="controls-overlay">
-            <div class="video-top-bar">
-                <div class="video-back-btn" onclick="closeVideoPlayer()">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <div class="video-title-header" id="video-title-text">Contenido</div>
-                <div style="width: 40px;"></div>
+        <div class="video-header">
+            <div class="video-back-btn" onclick="closeVideoPlayer()">
+                <i class="fas fa-arrow-left"></i>
             </div>
-            
-            <div class="video-center-control" onclick="togglePlayPause()">
-                <i class="fas fa-play" id="center-play-icon"></i>
-            </div>
-            
-            <div class="video-bottom-controls">
-                <div class="video-progress-container" onclick="seekVideo(event)">
-                    <div class="video-progress-bar" id="progress-bar"></div>
-                </div>
-                <div class="video-controls-row">
-                    <button class="video-control-btn" onclick="togglePlayPause()">
-                        <i class="fas fa-play" id="play-pause-icon"></i>
-                    </button>
-                    <span class="video-time">
-                        <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
-                    </span>
-                    <div style="flex: 1;"></div>
-                    <button class="video-control-btn" onclick="toggleFullscreen()">
-                        <i class="fas fa-expand" id="fullscreen-icon"></i>
-                    </button>
-                </div>
-            </div>
+            <div class="video-title-header" id="video-title-text">Película</div>
+            <div style="width: 40px;"></div>
         </div>
-        
-        <div class="video-player-container" id="video-container"></div>
+        <div class="video-player-container" id="video-container">
+        </div>
     </div>
 
     <div id="toast">Message</div>
-        <div id="profile-section">
-            <div class="avatar"><i class="fas fa-user"></i></div>
-            <h2 class="user-name" id="profile-name">User</h2>
-            <p class="user-email" id="profile-email">user@sparkflix.com</p>
-            
-            <button class="auth-btn secondary" onclick="logout()">
-                <i class="fas fa-sign-out-alt"></i> CERRAR SESIÓN
-            </button>
-            
-            <div style="margin-top: 50px; color: #444; font-size: 0.8rem;">
-                SPARKFLIX v2.0.0<br>desarrollado by @scoreado
-            </div>
-        </div>
 
-    </div>
-
-    <div class="bottom-nav" id="bottom-nav" style="display:none;">
-        <div class="nav-item active" onclick="switchTab('home')">
-            <i class="fas fa-home"></i>
-            <span>INICIO</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('search')">
-            <i class="fas fa-compass"></i>
-            <span>EXPLORAR</span>
-        </div>
-        <div class="nav-item" onclick="switchTab('profile')">
-            <i class="fas fa-user"></i>
-            <span>PERFIL</span>
-        </div>
-    </div>
-
-    <div id="movie-modal">
-        <div class="modal-hero">
-            <img src="" class="modal-poster" id="detail-poster">
-            <div class="close-btn" onclick="closeModal()"><i class="fas fa-times"></i></div>
-        </div>
-        <div class="modal-content">
-            <h1 class="modal-title" id="detail-title">Título</h1>
-            <div class="modal-tags">
-                <span class="tag" id="detail-year">2023</span>
-                <span class="tag" id="detail-genre">Género</span>
-                <span class="tag" style="color: gold;"><i class="fas fa-star"></i> <span id="detail-rating">8.5</span></span>
-            </div>
-            
-            <div class="series-selector" id="series-selector">
-                <h3 style="margin-bottom: 15px; color: white;">Seleccionar Arco/Temporada</h3>
-                <div class="arc-list" id="arc-list"></div>
-                <h4 style="margin-bottom: 10px; color: #ccc;">Episodios</h4>
-                <div class="episode-grid" id="episode-grid"></div>
-            </div>
-
-            <div class="action-row">
-                <button class="btn-play" id="play-trailer-btn">
-                    <i class="fas fa-play"></i> <span id="play-btn-text">Ver Película</span>
-                </button>
-                
-                <button class="btn-report" id="report-btn" onclick="openReportModal()">
-                    <i class="fas fa-flag"></i> Reportar
-                </button>
-            </div>
-            
-            <p class="modal-desc" id="detail-desc">
-                Descripción...
-            </p>
-        </div>
-    </div>
-
-    <div id="report-modal">
-        <div class="report-box">
-            <div class="report-header">
-                <h2 class="report-title">Reportar o Sugerir</h2>
-                <button class="report-close" onclick="closeReportModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="report-type-buttons">
-                <button class="report-type-btn active" onclick="selectReportType('problema')">
-                    <i class="fas fa-exclamation-triangle"></i> Problema
-                </button>
-                <button class="report-type-btn" onclick="selectReportType('sugerencia')">
-                    <i class="fas fa-lightbulb"></i> Sugerencia
-                </button>
-            </div>
-
-            <textarea 
-                class="report-textarea" 
-                id="report-message" 
-                placeholder="Describe el problema o tu sugerencia aquí..."
-            ></textarea>
-
-            <button class="report-submit" onclick="submitReport()">
-                <i class="fas fa-paper-plane"></i> Enviar
-            </button>
-        </div>
-    </div>
-
-    <div id="video-player-modal">
-        <div class="video-controls-overlay" id="controls-overlay">
-            <div class="video-top-bar">
-                <div class="video-back-btn" onclick="closeVideoPlayer()">
-                    <i class="fas fa-arrow-left"></i>
-                </div>
-                <div class="video-title-header" id="video-title-text">Contenido</div>
-                <div style="width: 40px;"></div>
-            </div>
-            
-            <div class="video-center-control" onclick="togglePlayPause()">
-                <i class="fas fa-play" id="center-play-icon"></i>
-            </div>
-            
-            <div class="video-bottom-controls">
-                <div class="video-progress-container" onclick="seekVideo(event)">
-                    <div class="video-progress-bar" id="progress-bar"></div>
-                </div>
-                <div class="video-controls-row">
-                    <button class="video-control-btn" onclick="togglePlayPause()">
-                        <i class="fas fa-play" id="play-pause-icon"></i>
-                    </button>
-                    <span class="video-time">
-                        <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
-                    </span>
-                    <div style="flex: 1;"></div>
-                    <button class="video-control-btn" onclick="toggleFullscreen()">
-                        <i class="fas fa-expand" id="fullscreen-icon"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-        <div class="video-player-container" id="video-container"></div>
-    </div>
-
-    <div id="toast">Message</div>
-    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
@@ -1065,9 +842,6 @@
         let selectedArcIndex = 0;
         let banners = [];
         let currentBannerIndex = 0;
-        let videoElement = null;
-        let isPlaying = false;
-        let controlsTimeout = null;
 
         window.switchToSignup = () => {
             document.getElementById('login-form').classList.remove('active');
@@ -1119,7 +893,8 @@
                 showToast(currentReportType === 'problema' ? '¡Reporte enviado!' : '¡Sugerencia enviada!');
                 closeReportModal();
             } catch (error) {
-                showToast('Error al enviar');
+                console.error('Error al enviar:', error);
+                showToast('Error al enviar. Intenta de nuevo.');
             }
         };
 
@@ -1129,8 +904,16 @@
             if(!email || !pass) return showToast("Ingresa email y contraseña");
             
             signInWithEmailAndPassword(auth, email, pass)
-                .then(() => showToast("¡Bienvenido!"))
-                .catch(err => showToast("Error al iniciar sesión"));
+                .then(() => showToast("¡Bienvenido de nuevo!"))
+                .catch(err => {
+                    if (err.code === 'auth/user-not-found') {
+                        showToast("Usuario no encontrado");
+                    } else if (err.code === 'auth/wrong-password') {
+                        showToast("Contraseña incorrecta");
+                    } else {
+                        showToast("Error al iniciar sesión");
+                    }
+                });
         };
 
         window.handleSignUp = () => {
@@ -1140,7 +923,7 @@
             
             if(!email || !pass || !passConfirm) return showToast("Completa todos los campos");
             if(pass !== passConfirm) return showToast("Las contraseñas no coinciden");
-            if(pass.length < 6) return showToast("Mínimo 6 caracteres");
+            if(pass.length < 6) return showToast("La contraseña debe tener al menos 6 caracteres");
 
             createUserWithEmailAndPassword(auth, email, pass)
                 .then(async (cred) => {
@@ -1149,14 +932,22 @@
                         joined: new Date(),
                         blocked: false
                     });
-                    showToast("¡Cuenta creada!");
+                    showToast("¡Cuenta creada exitosamente!");
                 })
-                .catch(err => showToast("Error al crear cuenta"));
+                .catch(err => {
+                    if (err.code === 'auth/email-already-in-use') {
+                        showToast("Este email ya está registrado");
+                    } else if (err.code === 'auth/invalid-email') {
+                        showToast("Email inválido");
+                    } else {
+                        showToast("Error al crear cuenta");
+                    }
+                });
         };
 
         window.handleAnonymousAuth = () => {
             signInAnonymously(auth)
-                .then(() => showToast("Entrando..."))
+                .then(() => showToast("Entrando como invitado..."))
                 .catch(err => showToast(err.message));
         };
 
@@ -1177,7 +968,7 @@
                     }
                 }
             } catch (err) {
-                console.log('Tema por defecto');
+                console.log('Usando tema por defecto');
             }
         }
 
@@ -1189,7 +980,7 @@
                 document.getElementById('bottom-nav').style.display = 'flex';
                 
                 document.getElementById('profile-name').innerText = user.displayName || "SPARKFLIX USER";
-                document.getElementById('profile-email').innerText = user.email || "INVITADO";
+                document.getElementById('profile-email').innerText = user.email || "CUENTA DE INVITADO";
                 
                 loadTheme();
                 fetchContent();
@@ -1323,7 +1114,7 @@
             grid.innerHTML = '';
             
             if(content.length === 0) {
-                grid.innerHTML = '<p style="color:#666; width:100%; text-align:center;">No hay contenido.</p>';
+                grid.innerHTML = '<p style="color:#666; width:100%; text-align:center;">No se encontró contenido.</p>';
                 return;
             }
 
@@ -1336,6 +1127,10 @@
                     <div class="movie-info">
                         <div class="card-title">${item.title}</div>
                         <div class="card-meta">${item.year} • ${item.genre}</div>
+                    </div>
+                    <div class="card-overlay">
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-meta">${item.year} • ${item.genre} • ⭐${item.rating}</div>
                     </div>
                 `;
                 el.onclick = () => openDetails(item);
@@ -1415,9 +1210,11 @@
                     videoId = url.split('v=')[1]?.split('&')[0];
                 } else if (url.includes('youtu.be/')) {
                     videoId = url.split('youtu.be/')[1]?.split('?')[0];
+                } else if (url.includes('youtube.com/embed/')) {
+                    videoId = url.split('embed/')[1]?.split('?')[0];
                 }
                 if (videoId) {
-                    return `<iframe id="movie-video-player" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allowfullscreen allow="autoplay"></iframe>`;
+                    return `<iframe id="movie-video-player" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe>`;
                 }
             }
             if (url.includes('drive.google.com')) {
@@ -1431,142 +1228,30 @@
                     return `<iframe id="movie-video-player" src="https://drive.google.com/file/d/${fileId}/preview" allowfullscreen allow="autoplay"></iframe>`;
                 }
             }
-            if (url.match(/\.(mp4|webm|ogg)(\?|$)/i)) {
-                return `<video id="movie-video-player" controls autoplay><source src="${url}" type="video/mp4"></video>`;
+            if (url.match(/\.(mp4|webm|ogg|m3u8)(\?|$)/i)) {
+                return `<video id="movie-video-player" controls autoplay controlsList="nodownload"><source src="${url}" type="video/mp4">Tu navegador no soporta video HTML5.</video>`;
             }
-            return `<iframe id="movie-video-player" src="${url}" allowfullscreen allow="autoplay"></iframe>`;
+            return `<iframe id="movie-video-player" src="${url}" allowfullscreen allow="autoplay; fullscreen"></iframe>`;
         }
 
         window.openVideoPlayer = (videoUrl, title) => {
             const modal = document.getElementById('video-player-modal');
             const container = document.getElementById('video-container');
             const titleHeader = document.getElementById('video-title-text');
-            
             container.innerHTML = '';
             const embedCode = getVideoEmbedCode(videoUrl);
             container.innerHTML = embedCode;
-            
             titleHeader.textContent = title || 'Contenido';
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
-            
-            setTimeout(() => {
-                videoElement = document.getElementById('movie-video-player');
-                if (videoElement && videoElement.tagName === 'VIDEO') {
-                    setupVideoControls();
-                }
-            }, 500);
-            
-            showControls();
         };
-
-        function setupVideoControls() {
-            if (!videoElement) return;
-            
-            videoElement.addEventListener('play', () => {
-                isPlaying = true;
-                document.getElementById('play-pause-icon').className = 'fas fa-pause';
-                document.getElementById('center-play-icon').className = 'fas fa-pause';
-                document.querySelector('.video-center-control').classList.add('playing');
-            });
-            
-            videoElement.addEventListener('pause', () => {
-                isPlaying = false;
-                document.getElementById('play-pause-icon').className = 'fas fa-play';
-                document.getElementById('center-play-icon').className = 'fas fa-play';
-                document.querySelector('.video-center-control').classList.remove('playing');
-            });
-            
-            videoElement.addEventListener('timeupdate', () => {
-                if (!videoElement.duration) return;
-                const progress = (videoElement.currentTime / videoElement.duration) * 100;
-                document.getElementById('progress-bar').style.width = progress + '%';
-                document.getElementById('current-time').textContent = formatTime(videoElement.currentTime);
-                document.getElementById('total-time').textContent = formatTime(videoElement.duration);
-            });
-            
-            videoElement.addEventListener('click', () => {
-                togglePlayPause();
-            });
-        }
-
-        window.togglePlayPause = () => {
-            if (!videoElement || videoElement.tagName !== 'VIDEO') return;
-            
-            if (isPlaying) {
-                videoElement.pause();
-            } else {
-                videoElement.play();
-            }
-            showControls();
-        };
-
-        window.seekVideo = (event) => {
-            if (!videoElement || videoElement.tagName !== 'VIDEO') return;
-            
-            const progressContainer = event.currentTarget;
-            const rect = progressContainer.getBoundingClientRect();
-            const pos = (event.clientX - rect.left) / rect.width;
-            videoElement.currentTime = pos * videoElement.duration;
-        };
-
-        window.toggleFullscreen = () => {
-            const modal = document.getElementById('video-player-modal');
-            
-            if (!document.fullscreenElement) {
-                if (modal.requestFullscreen) {
-                    modal.requestFullscreen();
-                } else if (modal.webkitRequestFullscreen) {
-                    modal.webkitRequestFullscreen();
-                }
-                document.getElementById('fullscreen-icon').className = 'fas fa-compress';
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                }
-                document.getElementById('fullscreen-icon').className = 'fas fa-expand';
-            }
-        };
-
-        function showControls() {
-            const overlay = document.getElementById('controls-overlay');
-            overlay.classList.remove('hidden');
-            
-            if (controlsTimeout) clearTimeout(controlsTimeout);
-            
-            controlsTimeout = setTimeout(() => {
-                if (isPlaying) {
-                    overlay.classList.add('hidden');
-                }
-            }, 3000);
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return '0:00';
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs.toString().padStart(2, '0')}`;
-        }
 
         window.closeVideoPlayer = () => {
             const modal = document.getElementById('video-player-modal');
             const container = document.getElementById('video-container');
-            
-            if (videoElement && videoElement.tagName === 'VIDEO') {
-                videoElement.pause();
-            }
-            
             container.innerHTML = '';
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
-            videoElement = null;
-            isPlaying = false;
-            
-            if (document.fullscreenElement) {
-                document.exitFullscreen();
-            }
         };
 
         window.selectArc = (arcIndex) => {
@@ -1585,7 +1270,7 @@
                 epBtn.className = 'episode-btn';
                 epBtn.innerHTML = `EP ${ep.episode}`;
                 epBtn.onclick = () => {
-                    openVideoPlayer(ep.url, `${currentSeriesData.title} - ${arc.name} - EP ${ep.episode}`);
+                    openVideoPlayer(ep.url, `${currentSeriesData.title} - ${arc.name} - Episodio ${ep.episode}`);
                 };
                 episodeGrid.appendChild(epBtn);
             });
@@ -1628,7 +1313,7 @@
                 
                 playBtn.onclick = () => {
                     if (content.arcs && content.arcs[0] && content.arcs[0].episodes && content.arcs[0].episodes[0]) {
-                        openVideoPlayer(content.arcs[0].episodes[0].url, `${content.title} - ${content.arcs[0].name} - EP 1`);
+                        openVideoPlayer(content.arcs[0].episodes[0].url, `${content.title} - ${content.arcs[0].name} - Episodio 1`);
                     } else {
                         showToast("Serie no disponible");
                     }
